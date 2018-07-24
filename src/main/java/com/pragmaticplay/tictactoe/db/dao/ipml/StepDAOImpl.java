@@ -20,6 +20,7 @@ public class StepDAOImpl extends BaseDAOImpl implements StepDAO {
 	
 	private final static String SELECT_ALL = "SELECT id, game_id, number_of_step, x, y FROM step";
 	private final static String SELECT_BY_ID = SELECT_ALL + " WHERE id=?";
+	private final static String SELECT_BY_GAME_ID = SELECT_ALL + " WHERE game_id=?";
 	private final static String CREATE_STEP = "INSERT INTO step (game_id, number_of_step, x, y) VALUES(?,?,?,?)";
 	private final static String UPDATE_STEP = "UPDATE step SET game_id=?, number_of_step=?, x=?, y=? WHERE id=?";
 	private final static String DELETE_STEP = "DELETE FROM step WHERE id=?";
@@ -59,6 +60,11 @@ public class StepDAOImpl extends BaseDAOImpl implements StepDAO {
 	@Override
 	public void delete(Long id) {
 		jdbcTemplate.update(DELETE_STEP, id);
+	}
+
+	@Override
+	public List<Step> getStepsByGame(Long idGame) {
+		return jdbcTemplate.query(SELECT_BY_GAME_ID, MAPPER, idGame);
 	}
 
 }

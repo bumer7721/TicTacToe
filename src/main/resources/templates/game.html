@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>TicTacToe</title>
+	<link rel="stylesheet" href="../css/styles.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+</head>
+<body>
+	<div id="game" class="container">
+		<div class="row align-items-center">
+			<div class="col-6">
+				<h1>Game {{game.name}}</h1>
+			</div>
+			<div class="col-6 text-right">
+				<a href="/">Go to dashboard</a>
+			</div>
+		</div>	
+		<div class="row">
+			<div id="status_div"  class="alert alert-success" role="alert">
+			  Status: {{game.status}}
+			</div>
+		</div>	
+		<hr>
+		<div class="row justify-content-center">
+			<div class="col-7">
+				<div v-for="i in 3" class="row tic-row">
+					<div :id="'cell'+i+j" v-for="j in 3" class="col-4 tic-box" v-on:click.once="newStep(i,j)">
+						<img :src="getXOorEmptyByXY(i,j)" class="col-img">
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr>
+	</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script type="text/javascript">
+
+ var game = new Vue({
+	el: '#game'
+	, data: {
+		game:{}
+		, gameId:0	
+ 		, numberOfStep:1
+ 		, steps:[] 
+ 	}
+	, mounted() {
+		this.fetchGame();
+		this.fetchSteps();
+	}
+	, methods: {
+		fetchGame() {
+			this.gameId = window.location.href.split("/").pop();
+			axios.get("/game/"+this.gameId)
+				.then(function(r){
+					this.game = r.data;
+				}.bind(this));
+		}
+		, fetchSteps() {
+			axios.get("/step/allByGame/"+this.gameId)
+				.then(function(r){
+					this.steps = r.data;
+					this.numberOfStep = r.data.length+1;
+				}.bind(this));
+		}
+		
+		, getXOorEmptyByXY(x, y, numberOfStep) {
+			var step = this.steps.find(function(v,i,arr){
+				if(v.x===x && v.y===y) {
+					return true;
+				}
+				return false;
+			});
+			
+			var stepNumber = numberOfStep;
+			if (step !== undefined) {
+				stepNumber = step.numberOfStep;
+			}
+			
+			var res = "blank";
+			if (stepNumber !== undefined){
+	 			if (stepNumber % 2 == 0 ) {
+					res = "O";
+				} else {
+					res = "X";
+				}
+			}
+			return "../img/"+res+".png";
+		}
+		, newStep(x, y) {
+			if (this.game.status === "In progress" && this.numberOfStep <= 9) {
+				var cell = document.getElementById("cell"+x+y);
+				var cellImg = cell.getElementsByTagName("img");
+				cellImg[0].src = this.getXOorEmptyByXY(x,y, this.numberOfStep);
+				
+				axios.post("/step/newStepAndRefreshStatus", {
+						gameId: this.gameId
+						, numberOfStep: this.numberOfStep
+						, x: x
+						, y: y 
+					}).then(function(r) {
+						this.game.status = r.data;
+						var statusElem = document.getElementById("status_div");
+						var className = "alert-success";
+						
+						if (this.game.status==="X won") {
+							className = "alert-danger";
+						} else if (this.game.status==="O won") {
+							className = "alert-primary";
+						} else if (this.game.status==="Draw") {
+							className = "alert-secondary";
+						}
+						
+						statusElem.className = "alert " + className;
+					}.bind(this));
+				
+				this.numberOfStep = this.numberOfStep+1;
+			}
+		} 
+	}
+});
+</script>
+
+</html>

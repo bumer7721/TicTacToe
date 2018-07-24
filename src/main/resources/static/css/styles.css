@@ -1,0 +1,10 @@
+.tic-box{
+  border: solid black 4px;
+}
+.tic-box:hover{
+  border: solid red 4px;
+}
+
+.col-img {
+	width: 200px;
+}

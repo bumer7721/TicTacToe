@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.pragmaticplay.tictactoe.db.dao.GameDAO;
 import com.pragmaticplay.tictactoe.db.entity.Game;
 import com.pragmaticplay.tictactoe.db.entity.mapper.GameRowMapper;
+import com.pragmaticplay.tictactoe.db.enums.Status;
 
 @Repository
 public class GameDAOImpl extends BaseDAOImpl implements GameDAO {
@@ -22,6 +23,7 @@ public class GameDAOImpl extends BaseDAOImpl implements GameDAO {
 	private final static String SELECT_BY_ID = SELECT_ALL + " WHERE id=?";
 	private final static String CREATE_GAME = "INSERT INTO game (name, status) VALUES(?,?)";
 	private final static String UPDATE_GAME = "UPDATE game SET name=?, status=? WHERE id=?";
+	private final static String UPDATE_GAME_STATUS = "UPDATE game SET status=? WHERE id=?";
 	private final static String DELETE_GAME = "DELETE FROM game WHERE id=?";
 
 	@Override
@@ -57,6 +59,11 @@ public class GameDAOImpl extends BaseDAOImpl implements GameDAO {
 	@Override
 	public void delete(Long id) {
 		jdbcTemplate.update(DELETE_GAME, id);
+	}
+
+	@Override
+	public void udateStatus(Long gameId, Status status) {
+		jdbcTemplate.update(UPDATE_GAME_STATUS, status.name(), gameId);
 	}
 
 }

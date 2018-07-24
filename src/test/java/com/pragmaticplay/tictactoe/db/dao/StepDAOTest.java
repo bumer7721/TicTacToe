@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.pragmaticplay.tictactoe.db.SpringTest;
+import com.pragmaticplay.tictactoe.SpringTest;
 import com.pragmaticplay.tictactoe.db.entity.Step;
 
 public class StepDAOTest extends SpringTest {
@@ -28,6 +28,13 @@ public class StepDAOTest extends SpringTest {
 		Step game = stepDAO.getById(1L);
 		assertThat(game, notNullValue());
 		assertThat(game.getId(), equalTo(1L));
+	}
+	
+	@Test
+	public void getByIdGame() {
+		List<Step> games = stepDAO.getStepsByGame(1L);
+		assertThat(games, notNullValue());
+		assertThat(games, hasSize(3));
 	}
 	
 	@Test

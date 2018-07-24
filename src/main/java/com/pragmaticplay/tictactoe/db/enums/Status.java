@@ -2,6 +2,9 @@ package com.pragmaticplay.tictactoe.db.enums;
 
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Status {
 	
 	IN_PROGRESS("In progress"),
@@ -24,7 +27,16 @@ public enum Status {
 		return Stream.of(values())
 				.filter(s->s.title.equals(title))
 				.findFirst()
-				.orElse(null);
+				.orElseThrow(() -> new IllegalArgumentException("Can't parse Status title: " + title));
 	}
 
+	@JsonCreator
+	public static Status fromString(String title) {
+		return Status.valueOfTitle(title);
+	}
+
+	@JsonValue
+	public String getName() {
+		return getTitle();
+	}
 }

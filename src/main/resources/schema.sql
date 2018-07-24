@@ -15,7 +15,8 @@ CREATE TABLE `STEP` (
 	`x` int(1) NOT NULL,
 	`y` int(1) NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE KEY `props_of_step` (`game_id`, `x`, `y`)
+	UNIQUE KEY `props_of_coordinate` (`game_id`, `x`, `y`),
+	UNIQUE KEY `props_of_step` (`game_id`, `number_of_step`)
 );
 
 ALTER TABLE `STEP` ADD CONSTRAINT `STEP_fk0` FOREIGN KEY (`game_id`) REFERENCES `GAME`(`id`) ON DELETE CASCADE;
